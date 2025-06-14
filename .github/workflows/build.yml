@@ -113,13 +113,23 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
 
+    - name: Debug - Verificar Secreto APP_KEYSTORE_BASE64
+      run: |
+        if [ -z "${{ secrets.APP_KEYSTORE_BASE64 }}" ]; then
+          echo "Error: El secreto APP_KEYSTORE_BASE64 está vacío."
+          exit 1
+        else
+          echo "El secreto APP_KEYSTORE_BASE64 está presente. (Solo se muestran los primeros 20 caracteres para depuración)"
+          echo "${{ secrets.APP_KEYSTORE_BASE64 }}" | head -c 20
+        fi
+    
     - name: Decode Keystore
       uses: timheuer/base64-to-file@v1.2.4
       id: android_keystore
       with:
         fileName: "android_keystore.jks"
         encodedString: ${{ secrets.APP_KEYSTORE_BASE64 }}
-
+    
     - name: Build APK
       run: |
         cd ${{ github.workspace }}/V2rayNG
@@ -130,25 +140,25 @@ jobs:
     
     - name: Upload arm64-v8a APK
       uses: actions/upload-artifact@v4.6.2
-      if: ${{  success() }}
+      if: ${{ success() }}
       with:
         name: arm64-v8a
         path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*arm64-v8a*.apk
-
+    
     - name: Upload armeabi-v7a APK
       uses: actions/upload-artifact@v4.6.2
-      if: ${{  success() }}
+      if: ${{ success() }}
       with:
         name: armeabi-v7a
         path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*armeabi-v7a*.apk
-
+    
     - name: Upload x86 APK
       uses: actions/upload-artifact@v4.6.2
-      if: ${{  success() }}
+      if: ${{ success() }}
       with:
         name: x86-apk
         path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*x86*.apk
-
+    
     - name: Upload to release
       uses: svenstaro/upload-release-action@v2
       if: github.event.inputs.release_tag != ''
@@ -157,3 +167,4 @@ jobs:
         tag: ${{ github.event.inputs.release_tag }}
         file_glob: true
         prerelease: true
+
