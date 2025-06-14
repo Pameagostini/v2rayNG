@@ -129,6 +129,26 @@ jobs:
           fileName: "android_keystore.jks"
           encodedString: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
 
+      - name: Debug - Verificar Secreto APP_KEYSTORE_ALIAS
+        run: |
+          if [ -z "${{ secrets.APP_KEYSTORE_ALIAS }}" ]; then
+            echo "Error: El secreto APP_KEYSTORE_ALIAS está vacío."
+            exit 1
+          else
+            echo "El secreto APP_KEYSTORE_ALIAS está presente. (Solo se muestran los primeros 20 caracteres para depuración)"
+            echo "${{ secrets.APP_KEYSTORE_ALIAS }}" | head -c 20
+          fi
+
+      - name: Debug - Verificar Secreto APP_KEY_PASSWORD
+        run: |
+          if [ -z "${{ secrets.APP_KEY_PASSWORD }}" ]; then
+            echo "Error: El secreto APP_KEY_PASSWORD está vacío."
+            exit 1
+          else
+            echo "El secreto APP_KEY_PASSWORD está presente. (Solo se muestran los primeros 20 caracteres para depuración)"
+            echo "${{ secrets.APP_KEY_PASSWORD }}" | head -c 20
+          fi
+
       - name: Build APK
         run: |
           cd ${{ github.workspace }}/V2rayNG
